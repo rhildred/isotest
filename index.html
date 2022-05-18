@@ -1,0 +1,33 @@
+<head>
+    <script src="https://unpkg.com/@isomorphic-git/lightning-fs"></script>
+    <script src="https://unpkg.com/isomorphic-git"></script>
+    <script type="module">
+        import http from 'https://unpkg.com/isomorphic-git@beta/http/web/index.js'
+        // Initialize isomorphic-git with a file system
+        window.fs = new LightningFS('fs', { wipe: true })
+        // I prefer using the Promisified version honestly
+        window.pfs = window.fs.promises
+
+        // Now let's pick a directory to work in.
+        window.dir = '/tutorial'
+        console.log(dir);
+        await pfs.mkdir(dir);
+        // Behold - it is empty!
+        await pfs.readdir(dir);
+        await git.clone({
+        fs,
+        http,
+        dir,
+        corsProxy: 'https://cors.isomorphic-git.org',
+        url: 'https://github.com/rhildred/MB215Lab1HelloWorld.git',
+        ref: 'main',
+        singleBranch: true,
+        depth: 10
+        });
+
+        // Now it should not be empty...
+        let oDir = await pfs.readdir(dir);
+        console.log(oDir);
+
+    </script>
+</head>
