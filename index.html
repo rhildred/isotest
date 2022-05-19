@@ -19,7 +19,7 @@
         http,
         dir,
         corsProxy: 'https://cors.isomorphic-git.org',
-        url: 'https://github.com/rhildred/MB215Lab1HelloWorld.git',
+        url: 'https://github.com/rhildred/isotest.git',
         ref: 'main',
         singleBranch: true,
         depth: 10
@@ -29,5 +29,15 @@
         let oDir = await pfs.readdir(dir);
         console.log(oDir);
 
+        let oLog = await git.log({fs, dir});
+        console.log(oLog);
+
+        let oStatus = await git.status({fs, dir, filepath: 'TEST.md'})
+        console.log(oStatus)
+
+        await git.add({fs, dir, filepath: 'TEST.md'})
+        oStatus = await git.status({fs, dir, filepath: 'TEST.md'})
+        console.log(oStatus)
+        
     </script>
 </head>
