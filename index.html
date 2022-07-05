@@ -1,6 +1,7 @@
 <head>
     <script src="https://unpkg.com/@isomorphic-git/lightning-fs"></script>
     <script src="https://unpkg.com/isomorphic-git"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script type="module">
         import http from 'https://unpkg.com/isomorphic-git@beta/http/web/index.js'
         // Initialize isomorphic-git with a file system
@@ -32,12 +33,54 @@
         let oLog = await git.log({fs, dir});
         console.log(oLog);
 
-        let oStatus = await git.status({fs, dir, filepath: 'TEST.md'})
-        console.log(oStatus)
+        let oStatus = await git.status({fs, dir, filepath: 'TEST.md'});
+        console.log(oStatus);
 
-        await git.add({fs, dir, filepath: 'TEST.md'})
-        oStatus = await git.status({fs, dir, filepath: 'TEST.md'})
-        console.log(oStatus)
+        await pfs.writeFile(`${dir}/TEST.md`, 'Very short README', 'utf8');
+        oStatus = await git.status({fs, dir, filepath: 'TEST.md'});
+        console.log(oStatus);
+
+        await git.add({fs, dir, filepath: 'TEST.md'});
+        oStatus = await git.status({fs, dir, filepath: 'TEST.md'});
+        console.log(oStatus);
+
+        await pfs.writeFile(`${dir}/newfile.txt`, 'Hello World', 'utf8');
+        oStatus = await git.status({fs, dir, filepath: 'newfile.txt'});
+        console.log(oStatus);
+
+        await git.add({fs, dir, filepath: 'newfile.txt'});
+        oStatus = await git.status({fs, dir, filepath: 'newfile.txt'});
+        console.log(oStatus);
+        let sha = await git.commit({
+            fs,
+            dir,
+            message: 'overwrite README. and add new file',
+            author: {
+                name: 'Rich Hildred',
+                email: 'rhildred@gmail.com'
+            }
+            })
+
+console.log(sha)
+
+        $("#push").click(async ()=>{
+            const sToken = $("#github_token").val();
+            let oPushResult = await git.push({
+                fs,
+                http,
+                corsProxy: 'https://cors.isomorphic-git.org',
+                url: 'https://github.com/rhildred/isotest.git',
+                dir: '/tutorial',
+                remote: 'origin',
+                ref: 'main',
+                onAuth: () => ({ username: sToken}),
+                });
+            console.log(oPushResult);
+
+        });
         
     </script>
 </head>
+<body>
+    <label>token <input id="github_token" placeholder="github token here" /></label><button id="push">push</button>
+</body>
