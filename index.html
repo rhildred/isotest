@@ -19,7 +19,7 @@
         fs,
         http,
         dir,
-        corsProxy: 'https://cors.isomorphic-git.org',
+        corsProxy: 'http://localhost:9999',
         url: 'https://github.com/rhildred/isotest.git',
         ref: 'main',
         singleBranch: true,
@@ -33,28 +33,18 @@
         let oLog = await git.log({fs, dir});
         console.log(oLog);
 
-        let oStatus = await git.status({fs, dir, filepath: 'TEST.md'});
-        console.log(oStatus);
+        const response = await fetch('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Red_Kitten_01.jpg/320px-Red_Kitten_01.jpg');
+        const aImage = await response.arrayBuffer();
 
-        await pfs.writeFile(`${dir}/TEST.md`, 'Very short README', 'utf8');
-        oStatus = await git.status({fs, dir, filepath: 'TEST.md'});
-        console.log(oStatus);
+        await pfs.writeFile(`${dir}/320px-Red_Kitten_01.jpg`, aImage, 'binary');
 
-        await git.add({fs, dir, filepath: 'TEST.md'});
-        oStatus = await git.status({fs, dir, filepath: 'TEST.md'});
-        console.log(oStatus);
-
-        await pfs.writeFile(`${dir}/newfile.txt`, 'Hello World', 'utf8');
-        oStatus = await git.status({fs, dir, filepath: 'newfile.txt'});
-        console.log(oStatus);
-
-        await git.add({fs, dir, filepath: 'newfile.txt'});
-        oStatus = await git.status({fs, dir, filepath: 'newfile.txt'});
+        await git.add({fs, dir, filepath: '320px-Red_Kitten_01.jpg'});
+        let oStatus = await git.status({fs, dir, filepath: '320px-Red_Kitten_01.jpg'});
         console.log(oStatus);
         let sha = await git.commit({
             fs,
             dir,
-            message: 'overwrite README. and add new file',
+            message: 'add kitten file',
             author: {
                 name: 'Rich Hildred',
                 email: 'rhildred@gmail.com'
@@ -68,7 +58,7 @@ console.log(sha)
             let oPushResult = await git.push({
                 fs,
                 http,
-                corsProxy: 'https://cors.isomorphic-git.org',
+                corsProxy: 'http://localhost:9999',
                 url: 'https://github.com/rhildred/isotest.git',
                 dir: '/tutorial',
                 remote: 'origin',
